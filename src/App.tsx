@@ -225,13 +225,13 @@ function AppV1MultiStep() {
   const getSavingsText = (): string | null => {
     const savings = calculateSavings();
     if (savings <= 0) return null;
-    
+
     if (billingFrequency === 'annual') {
-      return `You're saving ${displayPrice(savings)} with annual billing!`;
+      return `1 month free with annual billing — ${displayPrice(savings)} saved!`;
     } else if (billingFrequency === 'two-year') {
-      return `You're saving ${displayPrice(savings)} with 2-year billing!`;
+      return `3 months free with 2-year billing — ${displayPrice(savings)} saved!`;
     }
-    
+
     return null;
   };
 
@@ -802,10 +802,10 @@ function AppV1MultiStep() {
                         </div>
                         <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-xl">
                           <p className="text-sm font-semibold text-green-800">
-                            Switch to annual billing and pay just {displayPrice(haloCarePrices.annual / 12)}/mo
+                            Switch to annual and get 1 month of Halo Care free
                           </p>
                           <p className="text-xs text-green-700 mt-1">
-                            Save {displayPrice(haloCarePrices.monthly * 12 - haloCarePrices.annual)} per year on Halo Care alone
+                            Pay just {displayPrice(haloCarePrices.annual / 12)}/mo instead of {displayPrice(haloCarePrices.monthly)}/mo
                           </p>
                         </div>
                       </>
@@ -821,11 +821,7 @@ function AppV1MultiStep() {
                         <div className="mt-3 inline-flex items-center gap-1.5 bg-green-50 border border-green-200 rounded-full px-4 py-1.5">
                           <Check className="h-4 w-4 text-green-600" />
                           <span className="text-sm font-semibold text-green-800">
-                            You're saving {displayPrice(
-                              billingFrequency === 'annual'
-                                ? haloCarePrices.monthly * 12 - haloCarePrices.annual
-                                : haloCarePrices.monthly * 24 - haloCarePrices.twoYear
-                            )} on Halo Care with {billingFrequency === 'annual' ? 'annual' : '2-year'} billing
+                            {billingFrequency === 'annual' ? '1 month' : '3 months'} of Halo Care free with {billingFrequency === 'annual' ? 'annual' : '2-year'} billing
                           </span>
                         </div>
                       </>
