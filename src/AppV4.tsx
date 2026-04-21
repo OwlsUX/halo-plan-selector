@@ -545,25 +545,22 @@ export default function AppV4() {
 
       {/* ── Sticky Bottom Bar (mobile only) ── */}
       <div className="fixed bottom-0 left-0 right-0 lg:hidden bg-white/95 backdrop-blur-lg border-t border-[#eee] px-5 pt-4 pb-6 safe-area-bottom">
-        <div className="mb-3.5">
-          <div className="flex items-baseline gap-1.5">
-            <span className="text-[26px] font-semibold text-[#1a1a1a] tracking-[-0.02em] tabular-nums">{fmt(grandTotalMonthly())}</span>
-            <span className="text-[14px] text-[#999] font-normal">/mo</span>
-          </div>
-          {billing !== 'monthly' && (
-            <div className="flex items-baseline gap-1.5 mt-0.5">
-              <span className="text-[12px] text-[#bbb]">
-                {fmt(grandTotal())} billed {billingLabelLong()}
-              </span>
-              {totalSavings(plan) > 0 && (
-                <>
-                  <span className="text-[12px] text-[#bbb]">&middot;</span>
-                  <span className="text-[12px] font-medium text-[#16a34a]">
-                    Save {fmt(totalSavings(plan))} vs monthly
-                  </span>
-                </>
-              )}
+        <div className="flex items-end justify-between mb-3.5">
+          <div>
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-[26px] font-semibold text-[#1a1a1a] tracking-[-0.02em] tabular-nums">{fmt(grandTotalMonthly())}</span>
+              <span className="text-[14px] text-[#999] font-normal">/mo</span>
             </div>
+            {billing !== 'monthly' && (
+              <p className="text-[13px] text-[#aaa] mt-0.5">
+                {fmt(grandTotal())} billed {billingLabelLong()}
+              </p>
+            )}
+          </div>
+          {billing !== 'monthly' && totalSavings(plan) > 0 && (
+            <span className="text-[13px] font-semibold text-[#16a34a]">
+              Save {fmt(totalSavings(plan))} vs monthly
+            </span>
           )}
         </div>
         <button className="w-full h-[52px] bg-[#1a1a1a] hover:bg-[#333] active:bg-[#000] text-white rounded-xl font-medium text-[15px] tracking-[-0.01em] transition-colors duration-150 flex items-center justify-center gap-2">
