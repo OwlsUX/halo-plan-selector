@@ -273,11 +273,13 @@ export default function AppV4() {
                   <span className={`block text-[17px] font-semibold mt-1.5 ${
                     isSelected ? 'text-[#1a1a1a]' : 'text-[#aaa]'
                   }`}>{p.label}</span>
-                  <span className={`block text-[19px] font-bold mt-1 tracking-[-0.02em] tabular-nums ${
+                  <span className={`block text-[20px] font-bold mt-1.5 tracking-[-0.02em] tabular-nums ${
                     isSelected ? 'text-[#1a1a1a]' : 'text-[#ccc]'
                   }`}>
                     {fmt(monthlyPrice(p))}
-                    <span className={`text-[11px] font-normal ${isSelected ? 'text-[#999]' : 'text-[#ddd]'}`}>/mo</span>
+                  </span>
+                  <span className={`block text-[11px] mt-0.5 ${isSelected ? 'text-[#999]' : 'text-[#ddd]'}`}>
+                    monthly
                   </span>
                 </button>
               );
@@ -434,25 +436,40 @@ export default function AppV4() {
         </div>
 
         {/* ── Collar Count ── */}
-        <div className="flex items-center justify-between bg-white rounded-xl px-5 py-3.5 shadow-[0_1px_4px_rgba(0,0,0,0.04)]">
-          <span className="text-[14px] font-medium text-[#666]">Number of collars</span>
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setCollarCount(Math.max(1, collarCount - 1))}
-              disabled={collarCount <= 1}
-              className="w-7 h-7 rounded-lg border border-[#e0e0e0] flex items-center justify-center disabled:opacity-20 transition-opacity"
-            >
-              <Minus className="h-3 w-3 text-[#666]" />
-            </button>
-            <span className="text-[15px] font-semibold text-[#1a1a1a] w-5 text-center tabular-nums">{collarCount}</span>
-            <button
-              onClick={() => setCollarCount(Math.min(10, collarCount + 1))}
-              disabled={collarCount >= 10}
-              className="w-7 h-7 rounded-lg border border-[#e0e0e0] flex items-center justify-center disabled:opacity-20 transition-opacity"
-            >
-              <Plus className="h-3 w-3 text-[#666]" />
-            </button>
+        <div className="bg-white rounded-xl px-5 py-3.5 shadow-[0_1px_4px_rgba(0,0,0,0.04)]">
+          <div className="flex items-center justify-between">
+            <span className="text-[14px] font-medium text-[#666]">Number of collars</span>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setCollarCount(Math.max(1, collarCount - 1))}
+                disabled={collarCount <= 1}
+                className="w-7 h-7 rounded-lg border border-[#e0e0e0] flex items-center justify-center disabled:opacity-20 transition-opacity"
+              >
+                <Minus className="h-3 w-3 text-[#666]" />
+              </button>
+              <span className="text-[15px] font-semibold text-[#1a1a1a] w-5 text-center tabular-nums">{collarCount}</span>
+              <button
+                onClick={() => setCollarCount(Math.min(10, collarCount + 1))}
+                disabled={collarCount >= 10}
+                className="w-7 h-7 rounded-lg border border-[#e0e0e0] flex items-center justify-center disabled:opacity-20 transition-opacity"
+              >
+                <Plus className="h-3 w-3 text-[#666]" />
+              </button>
+            </div>
           </div>
+          {collarCount > 1 && (
+            <div className="mt-3 pt-3 border-t border-[#f0f0f0] space-y-1.5">
+              <div className="flex justify-between text-[13px]">
+                <span className="text-[#888]">Extra collar{collarCount > 2 ? 's' : ''} at {fmt(plan.collarExtra)}/mo each</span>
+                <span className="font-medium text-[#16a34a]">
+                  Save {fmt((monthlyPrice(plan) - plan.collarExtra) * (collarCount - 1))}/mo
+                </span>
+              </div>
+              <p className="text-[12px] text-[#aaa]">
+                {collarCount - 1} extra collar{collarCount > 2 ? 's' : ''} at {fmt(plan.collarExtra)}/mo vs {fmt(monthlyPrice(plan))}/mo for the first — {fmt(monthlyPrice(plan) - plan.collarExtra)}/mo off each
+              </p>
+            </div>
+          )}
         </div>
 
         {/* ── Order Breakdown (mobile only) ── */}
