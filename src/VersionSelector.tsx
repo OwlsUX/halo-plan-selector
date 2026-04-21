@@ -114,6 +114,14 @@ export default function VersionSelector({ onSelectVersion }: VersionSelectorProp
                   </div>
                   <span>Sticky bottom bar with total + CTA always visible</span>
                 </div>
+                <div className="flex items-start gap-2">
+                  <div className="w-5 h-5 rounded-full bg-[#1a1a1a] flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <span>Two-column desktop layout with sticky order summary</span>
+                </div>
               </div>
 
               <div className="pt-4 border-t mt-auto">
