@@ -19,9 +19,9 @@ export default function VersionSelector({ onSelectVersion }: VersionSelectorProp
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid md:grid-cols-2 gap-6 md:items-stretch">
           {/* Version 1 Card */}
-          <Card className="border-2 hover:border-[#2F93F3] transition-all duration-300 hover:shadow-lg">
+          <Card className="border-2 hover:border-[#2F93F3] transition-all duration-300 hover:shadow-lg flex flex-col">
             <CardHeader className="pb-4">
               <div className="flex items-center justify-between mb-2">
                 <CardTitle className="text-2xl">Version 1</CardTitle>
@@ -33,7 +33,7 @@ export default function VersionSelector({ onSelectVersion }: VersionSelectorProp
                 Guided multi-step flow with updated Halo Care
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 flex-1 flex flex-col">
               <div className="space-y-3 text-sm text-gray-600">
                 <div className="flex items-start gap-2">
                   <div className="w-5 h-5 rounded-full bg-[#2F93F3] flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -61,7 +61,7 @@ export default function VersionSelector({ onSelectVersion }: VersionSelectorProp
                 </div>
               </div>
 
-              <div className="pt-4 border-t">
+              <div className="pt-4 border-t mt-auto">
                 <p className="text-xs text-gray-500 mb-4">
                   <strong>Use case:</strong> Users who prefer guided flows and clear decision points
                 </p>
@@ -76,7 +76,7 @@ export default function VersionSelector({ onSelectVersion }: VersionSelectorProp
           </Card>
 
           {/* Version 2 Card */}
-          <Card className="border-2 border-[#1a1a1a] hover:border-[#2F93F3] transition-all duration-300 hover:shadow-lg bg-gradient-to-br from-white to-gray-50">
+          <Card className="border-2 border-[#1a1a1a] hover:border-[#2F93F3] transition-all duration-300 hover:shadow-lg bg-gradient-to-br from-white to-gray-50 flex flex-col">
             <CardHeader className="pb-4">
               <div className="flex items-center justify-between mb-2">
                 <CardTitle className="text-2xl">Version 2</CardTitle>
@@ -88,7 +88,7 @@ export default function VersionSelector({ onSelectVersion }: VersionSelectorProp
                 Single-page with billing as stacked options
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 flex-1 flex flex-col">
               <div className="space-y-3 text-sm text-gray-600">
                 <div className="flex items-start gap-2">
                   <div className="w-5 h-5 rounded-full bg-[#1a1a1a] flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -116,7 +116,7 @@ export default function VersionSelector({ onSelectVersion }: VersionSelectorProp
                 </div>
               </div>
 
-              <div className="pt-4 border-t">
+              <div className="pt-4 border-t mt-auto">
                 <p className="text-xs text-gray-500 mb-4">
                   <strong>Use case:</strong> Mobile users who want a guided top-down decision flow
                 </p>
