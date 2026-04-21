@@ -790,18 +790,45 @@ function AppV1MultiStep() {
                   </div>
 
                   {/* Heading */}
-                  <h3 className="font-bold text-2xl text-center mb-4">Add Protection</h3>
+                  <h3 className="font-bold text-2xl text-center mb-2">Add Protection</h3>
 
-                  {/* Pricing */}
-                  <div className="text-center mb-6">
-                    <div>
-                      <span className="text-3xl font-bold text-gray-900">{displayPrice(getHaloCareMonthlyEquivalent())}</span>
-                      <span className="text-gray-600 text-lg">/mo per collar</span>
-                    </div>
-                    {getBillingDiscountText() && (
-                      <p className="text-sm font-medium text-green-600 mt-2">
-                        {getBillingDiscountText()}
-                      </p>
+                  {/* Pricing — show monthly vs annual comparison */}
+                  <div className="text-center mb-5">
+                    {billingFrequency === 'monthly' ? (
+                      <>
+                        <div>
+                          <span className="text-3xl font-bold text-gray-900">{displayPrice(haloCarePrices.monthly)}</span>
+                          <span className="text-gray-600 text-lg">/mo per collar</span>
+                        </div>
+                        <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-xl">
+                          <p className="text-sm font-semibold text-green-800">
+                            Switch to annual billing and pay just {displayPrice(haloCarePrices.annual / 12)}/mo
+                          </p>
+                          <p className="text-xs text-green-700 mt-1">
+                            Save {displayPrice(haloCarePrices.monthly * 12 - haloCarePrices.annual)} per year on Halo Care alone
+                          </p>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="flex items-baseline justify-center gap-2">
+                          <span className="text-3xl font-bold text-gray-900">{displayPrice(getHaloCareMonthlyEquivalent())}</span>
+                          <span className="text-gray-600 text-lg">/mo per collar</span>
+                        </div>
+                        <p className="text-sm text-gray-400 line-through mt-1">
+                          {displayPrice(haloCarePrices.monthly)}/mo without {billingFrequency === 'annual' ? 'annual' : '2-year'} billing
+                        </p>
+                        <div className="mt-3 inline-flex items-center gap-1.5 bg-green-50 border border-green-200 rounded-full px-4 py-1.5">
+                          <Check className="h-4 w-4 text-green-600" />
+                          <span className="text-sm font-semibold text-green-800">
+                            You're saving {displayPrice(
+                              billingFrequency === 'annual'
+                                ? haloCarePrices.monthly * 12 - haloCarePrices.annual
+                                : haloCarePrices.monthly * 24 - haloCarePrices.twoYear
+                            )} on Halo Care with {billingFrequency === 'annual' ? 'annual' : '2-year'} billing
+                          </span>
+                        </div>
+                      </>
                     )}
                   </div>
 
@@ -826,19 +853,11 @@ function AppV1MultiStep() {
                         <Check className="h-5 w-5 text-green-600 flex-shrink-0" />
                         <span className="text-gray-700 text-base font-medium">No questions asked — any reason</span>
                       </li>
-                      {billingFrequency !== 'monthly' && (
-                        <li className="flex items-center gap-3">
-                          <Check className="h-5 w-5 text-green-600 flex-shrink-0" />
-                          <span className="text-green-700 text-base font-medium">
-                            Halo Care also discounted with {billingFrequency === 'annual' ? 'annual' : '2-year'} billing
-                          </span>
-                        </li>
-                      )}
                     </ul>
                   </div>
 
                   {/* CTA Button */}
-                  <Button 
+                  <Button
                     className="w-full h-12 font-medium text-lg shadow-sm"
                     style={{ backgroundColor: '#2F93F3', color: 'white' }}
                     onClick={(e) => {
