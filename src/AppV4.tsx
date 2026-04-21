@@ -265,11 +265,19 @@ export default function AppV4() {
                       : 'hover:bg-[#f5f5f5] active:bg-[#eee]'
                   }`}
                 >
-                  <span className={`text-[10px] font-medium uppercase tracking-[0.08em] block ${
-                    isSelected ? 'text-[#1a1a1a]' : 'text-[#bbb]'
-                  }`}>
-                    {p.badge}
-                  </span>
+                  {key === 'silver' ? (
+                    <span className={`inline-block text-[9px] font-bold uppercase tracking-[0.08em] px-2 py-0.5 rounded-full ${
+                      isSelected ? 'bg-[#1a1a1a] text-white' : 'bg-[#eee] text-[#999]'
+                    }`}>
+                      {p.badge}
+                    </span>
+                  ) : (
+                    <span className={`text-[10px] font-medium uppercase tracking-[0.08em] block ${
+                      isSelected ? 'text-[#1a1a1a]' : 'text-[#bbb]'
+                    }`}>
+                      {p.badge}
+                    </span>
+                  )}
                   <span className={`block text-[17px] font-semibold mt-1.5 ${
                     isSelected ? 'text-[#1a1a1a]' : 'text-[#aaa]'
                   }`}>{p.label}</span>
@@ -278,7 +286,7 @@ export default function AppV4() {
                   }`}>
                     {fmt(monthlyPrice(p))}
                   </span>
-                  <span className={`block text-[11px] mt-0.5 ${isSelected ? 'text-[#999]' : 'text-[#ddd]'}`}>
+                  <span className={`block text-[11px] -mt-0.5 ${isSelected ? 'text-[#999]' : 'text-[#ddd]'}`}>
                     monthly
                   </span>
                 </button>
