@@ -14,6 +14,12 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './
 type BillingFrequency = 'monthly' | 'annual' | 'two-year';
 type PlanType = 'bronze' | 'silver' | 'gold';
 
+const planColors: Record<PlanType, { bg: string; ring: string }> = {
+  bronze: { bg: 'bg-[#CD7F32]/10', ring: 'ring-[#CD7F32]/40' },
+  silver: { bg: 'bg-[#C0C0C0]/15', ring: 'ring-[#C0C0C0]/50' },
+  gold: { bg: 'bg-[#FFD700]/12', ring: 'ring-[#FFD700]/40' },
+};
+
 const plans: Record<PlanType, {
   label: string;
   badge: string;
@@ -75,7 +81,7 @@ export default function AppV4() {
   const [billing, setBilling] = useState<BillingFrequency>('two-year');
   const [haloCare, setHaloCare] = useState(true);
   const [collarCount, setCollarCount] = useState(1);
-  const [showDetails, setShowDetails] = useState(false);
+  const [showDetails, setShowDetails] = useState(true);
   const detailsRef = useRef<HTMLDivElement>(null);
 
   const plan = plans[selectedPlan];
@@ -157,55 +163,129 @@ export default function AppV4() {
     }
   }, [showDetails]);
 
+  // Desktop order summary (extracted for right rail)
+  const OrderSummary = () => (
+    <div className="space-y-5">
+      {/* Summary card */}
+      <div className="bg-white rounded-xl shadow-[0_1px_4px_rgba(0,0,0,0.04)] p-6">
+        <p className="text-[15px] font-semibold text-[#1a1a1a] mb-4">Order summary</p>
+        <div className="space-y-3 text-[14px]">
+          <div className="flex justify-between">
+            <span className="text-[#888]">{plan.label} Plan</span>
+            <span className="font-medium text-[#1a1a1a]">{fmt(periodPrice(plan))}{billingLabel()}</span>
+          </div>
+
+          {collarCount > 1 && (
+            <div className="flex justify-between">
+              <span className="text-[#888]">+{collarCount - 1} extra collar{collarCount > 2 ? 's' : ''}</span>
+              <span className="font-medium text-[#1a1a1a]">{fmt(additionalCollarPeriod() * (collarCount - 1))}{billingLabel()}</span>
+            </div>
+          )}
+
+          {haloCare && (
+            <div className="flex justify-between">
+              <span className="text-[#888]">Halo Care x{collarCount}</span>
+              <span className="font-medium text-[#1a1a1a]">{fmt(haloCarePeriod() * collarCount)}{billingLabel()}</span>
+            </div>
+          )}
+
+          {billing !== 'monthly' && (
+            <div className="flex justify-between">
+              <span className="text-[#16a34a]">{billing === 'annual' ? 'Annual' : '2-Year'} savings</span>
+              <span className="font-medium text-[#16a34a]">-{fmt(totalSavings(plan))}</span>
+            </div>
+          )}
+
+          <div className="h-px bg-[#f0f0f0] my-1" />
+
+          <div className="flex justify-between">
+            <span className="font-semibold text-[#1a1a1a]">Total</span>
+            <div className="text-right">
+              <span className="font-semibold text-[#1a1a1a]">{fmt(grandTotalMonthly())}/mo</span>
+              {billing !== 'monthly' && (
+                <p className="text-[12px] text-[#bbb] mt-0.5">{fmt(grandTotal())} {billingLabelLong()}</p>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {billing !== 'monthly' && totalSavings(plan) > 0 && (
+          <div className="mt-4 py-2.5 px-3 bg-[#f8faf8] rounded-lg">
+            <span className="text-[13px] font-medium text-[#16a34a]">
+              Save {fmt(totalSavings(plan))} vs monthly
+            </span>
+          </div>
+        )}
+      </div>
+
+      {/* CTA */}
+      <button className="w-full h-[52px] bg-[#1a1a1a] hover:bg-[#333] active:bg-[#000] text-white rounded-xl font-medium text-[15px] tracking-[-0.01em] transition-colors duration-150 flex items-center justify-center gap-2">
+        Continue to payment
+        <ArrowRight className="h-4 w-4" />
+      </button>
+
+      <p className="text-[12px] text-[#bbb] text-center">Secure checkout — payment details on next step</p>
+    </div>
+  );
+
   return (
-    <div className="min-h-screen bg-[#fafafa] pb-40" style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif" }}>
+    <div className="min-h-screen bg-[#fafafa]" style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif" }}>
 
       {/* ── Header ── */}
-      <div className="px-5 pt-8 pb-6">
+      <div className="px-5 pt-5 pb-6 lg:pt-7 lg:pb-8 lg:max-w-[960px] lg:mx-auto">
+        <img
+          src="https://cdn-dkeie.nitrocdn.com/sHFOGKXJXoWRNoejqoKZeaINjkJrDIOG/assets/images/optimized/rev-d53dbf8/d252xzqwj6utz.cloudfront.net/static/owls-home/Halo-Logo.svg"
+          alt="Halo"
+          className="h-7 mx-auto mb-3"
+        />
         <p className="text-xs font-medium tracking-[0.15em] uppercase text-[#999] text-center mb-2">Pack Membership</p>
         <h1 className="text-[22px] font-semibold text-[#1a1a1a] text-center tracking-[-0.02em] leading-tight">
           Choose your plan
         </h1>
       </div>
 
-      <div className="px-4 space-y-4">
+      <div className="px-4 pb-44 lg:pb-12 lg:max-w-[960px] lg:mx-auto lg:grid lg:grid-cols-[1fr_320px] lg:gap-8 lg:items-start">
+      {/* ── Left Column (config) ── */}
+      <div className="space-y-4">
 
-        {/* ── Plan Selector ── */}
-        <div className="flex gap-2">
-          {(Object.keys(plans) as PlanType[]).map((key) => {
-            const p = plans[key];
-            const isSelected = selectedPlan === key;
-            return (
-              <button
-                key={key}
-                onClick={() => setSelectedPlan(key)}
-                className={`flex-1 rounded-xl p-3 text-left transition-all duration-200 ${
-                  isSelected
-                    ? 'bg-white shadow-[0_1px_8px_rgba(0,0,0,0.08)] ring-1 ring-[#1a1a1a]/10'
-                    : 'bg-transparent'
-                }`}
-              >
-                <span className={`text-[10px] font-medium uppercase tracking-[0.08em] ${
-                  isSelected ? 'text-[#1a1a1a]' : 'text-[#bbb]'
-                }`}>
-                  {p.badge}
-                </span>
-                <span className={`block text-[16px] font-semibold mt-1 ${
-                  isSelected ? 'text-[#1a1a1a]' : 'text-[#999]'
-                }`}>{p.label}</span>
-                <span className={`block text-[18px] font-semibold mt-0.5 ${
-                  isSelected ? 'text-[#1a1a1a]' : 'text-[#bbb]'
-                }`}>
-                  {fmt(monthlyPrice(p))}
-                  <span className={`text-[12px] font-normal ${isSelected ? 'text-[#999]' : 'text-[#ccc]'}`}>/mo</span>
-                </span>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* ── Selected Plan Features ── */}
+        {/* ── Plan Card (tabs + features unified) ── */}
         <div className="bg-white rounded-xl shadow-[0_1px_4px_rgba(0,0,0,0.04)] overflow-hidden">
+          {/* Plan tabs */}
+          <div className="flex gap-2 p-3">
+            {(Object.keys(plans) as PlanType[]).map((key) => {
+              const p = plans[key];
+              const isSelected = selectedPlan === key;
+              return (
+                <button
+                  key={key}
+                  onClick={() => setSelectedPlan(key)}
+                  className={`flex-1 py-4 px-2 text-center rounded-lg transition-all duration-200 ${
+                    isSelected
+                      ? `${planColors[key].bg} ring-1 ${planColors[key].ring}`
+                      : 'hover:bg-[#f5f5f5] active:bg-[#eee]'
+                  }`}
+                >
+                  <span className={`text-[10px] font-medium uppercase tracking-[0.08em] block ${
+                    isSelected ? 'text-[#1a1a1a]' : 'text-[#bbb]'
+                  }`}>
+                    {p.badge}
+                  </span>
+                  <span className={`block text-[17px] font-semibold mt-1.5 ${
+                    isSelected ? 'text-[#1a1a1a]' : 'text-[#aaa]'
+                  }`}>{p.label}</span>
+                  <span className={`block text-[19px] font-bold mt-1 tracking-[-0.02em] tabular-nums ${
+                    isSelected ? 'text-[#1a1a1a]' : 'text-[#ccc]'
+                  }`}>
+                    {fmt(monthlyPrice(p))}
+                    <span className={`text-[11px] font-normal ${isSelected ? 'text-[#999]' : 'text-[#ddd]'}`}>/mo</span>
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+          <div className="h-px bg-[#f0f0f0] mx-5" />
+
+          {/* Features */}
           <div className="p-5 space-y-3.5">
             {[
               { text: plan.fences, bold: true },
@@ -223,12 +303,11 @@ export default function AppV4() {
                 </span>
               </div>
             ))}
-            {/* Shared — dimmed */}
             <div className="flex items-center gap-3">
               <div className="w-[18px] h-[18px] rounded-full bg-[#f5f5f5] flex items-center justify-center flex-shrink-0">
-                <Check className="h-2.5 w-2.5 text-[#ccc]" />
+                <Check className="h-2.5 w-2.5 text-[#1a1a1a]" />
               </div>
-              <span className="text-[14px] text-[#bbb]">Unlimited cellular data & global coverage</span>
+              <span className="text-[14px] text-[#666]">Unlimited cellular data & global coverage</span>
             </div>
           </div>
         </div>
@@ -376,39 +455,8 @@ export default function AppV4() {
           </div>
         </div>
 
-        {/* ── FAQ ── */}
-        <div className="space-y-2">
-          <p className="text-xs font-medium tracking-[0.1em] uppercase text-[#999] px-1">FAQ</p>
-          <Accordion type="single" collapsible className="space-y-2">
-            <AccordionItem value="item-1" className="bg-white rounded-xl shadow-[0_1px_4px_rgba(0,0,0,0.04)] border-none px-5">
-              <AccordionTrigger className="text-[14px] text-left font-medium text-[#1a1a1a] hover:no-underline py-4 [&>svg]:text-[#bbb]">
-                Can I change my plan later?
-              </AccordionTrigger>
-              <AccordionContent className="text-[14px] text-[#777] pb-4">
-                Yes! You can upgrade or downgrade your plan at any time from your account settings.
-              </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="item-2" className="bg-white rounded-xl shadow-[0_1px_4px_rgba(0,0,0,0.04)] border-none px-5">
-              <AccordionTrigger className="text-[14px] text-left font-medium text-[#1a1a1a] hover:no-underline py-4 [&>svg]:text-[#bbb]">
-                What's included with Halo Care?
-              </AccordionTrigger>
-              <AccordionContent className="text-[14px] text-[#777] pb-4">
-                Halo Care includes collar replacement coverage, free upgrade program, and priority support.
-              </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="item-3" className="bg-white rounded-xl shadow-[0_1px_4px_rgba(0,0,0,0.04)] border-none px-5">
-              <AccordionTrigger className="text-[14px] text-left font-medium text-[#1a1a1a] hover:no-underline py-4 [&>svg]:text-[#bbb]">
-                How does billing work for multiple collars?
-              </AccordionTrigger>
-              <AccordionContent className="text-[14px] text-[#777] pb-4">
-                Additional collars are discounted! Bronze plans are +$3.99/mo per collar, while Silver and Gold are +$4.99/mo per collar.
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
-        </div>
-
-        {/* ── Order Breakdown ── */}
-        <div className="bg-white rounded-xl shadow-[0_1px_4px_rgba(0,0,0,0.04)] overflow-hidden">
+        {/* ── Order Breakdown (mobile only) ── */}
+        <div className="bg-white rounded-xl shadow-[0_1px_4px_rgba(0,0,0,0.04)] overflow-hidden lg:hidden">
           <button
             onClick={() => setShowDetails(!showDetails)}
             className="w-full px-5 py-3.5 flex items-center justify-between"
@@ -455,10 +503,48 @@ export default function AppV4() {
             </div>
           )}
         </div>
+
+        {/* ── FAQ ── */}
+        <div className="space-y-2">
+          <p className="text-xs font-medium tracking-[0.1em] uppercase text-[#999] px-1">FAQ</p>
+          <Accordion type="single" collapsible className="space-y-2">
+            <AccordionItem value="item-1" className="bg-white rounded-xl shadow-[0_1px_4px_rgba(0,0,0,0.04)] border-none px-5">
+              <AccordionTrigger className="text-[14px] text-left font-medium text-[#1a1a1a] hover:no-underline py-4 [&>svg]:text-[#bbb]">
+                Can I change my plan later?
+              </AccordionTrigger>
+              <AccordionContent className="text-[14px] text-[#777] pb-4">
+                Yes! You can upgrade or downgrade your plan at any time from your account settings.
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-2" className="bg-white rounded-xl shadow-[0_1px_4px_rgba(0,0,0,0.04)] border-none px-5">
+              <AccordionTrigger className="text-[14px] text-left font-medium text-[#1a1a1a] hover:no-underline py-4 [&>svg]:text-[#bbb]">
+                What's included with Halo Care?
+              </AccordionTrigger>
+              <AccordionContent className="text-[14px] text-[#777] pb-4">
+                Halo Care includes collar replacement coverage, free upgrade program, and priority support.
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-3" className="bg-white rounded-xl shadow-[0_1px_4px_rgba(0,0,0,0.04)] border-none px-5">
+              <AccordionTrigger className="text-[14px] text-left font-medium text-[#1a1a1a] hover:no-underline py-4 [&>svg]:text-[#bbb]">
+                How does billing work for multiple collars?
+              </AccordionTrigger>
+              <AccordionContent className="text-[14px] text-[#777] pb-4">
+                Additional collars are discounted! Bronze plans are +$3.99/mo per collar, while Silver and Gold are +$4.99/mo per collar.
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </div>
       </div>
 
-      {/* ── Sticky Bottom Bar ── */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-lg border-t border-[#eee] px-5 pt-4 pb-6 safe-area-bottom">
+      {/* ── Right Rail (desktop only) ── */}
+      <div className="hidden lg:block lg:sticky lg:top-8">
+        <OrderSummary />
+      </div>
+
+      </div>
+
+      {/* ── Sticky Bottom Bar (mobile only) ── */}
+      <div className="fixed bottom-0 left-0 right-0 lg:hidden bg-white/95 backdrop-blur-lg border-t border-[#eee] px-5 pt-4 pb-6 safe-area-bottom">
         <div className="mb-3.5">
           <div className="flex items-baseline gap-1.5">
             <span className="text-[26px] font-semibold text-[#1a1a1a] tracking-[-0.02em] tabular-nums">{fmt(grandTotalMonthly())}</span>
