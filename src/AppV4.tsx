@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Check, ChevronDown, ArrowRight, Plus, Minus } from 'lucide-react';
+import { Check, X, ChevronDown, ArrowRight, Plus, Minus } from 'lucide-react';
 
 const CollarIcon = ({ className }: { className?: string }) => (
   <svg width="20" height="22" viewBox="0 0 29 31" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
@@ -287,31 +287,115 @@ export default function AppV4() {
           </div>
           <div className="h-px bg-[#f0f0f0] mx-5" />
 
-          {/* Features */}
-          <div className="p-5 space-y-3.5">
-            {[
-              { text: plan.fences, bold: true },
-              { text: plan.support },
-              { text: plan.discount },
-              ...(plan.accessories ? [{ text: plan.accessories }] : []),
-              ...plan.extras.map(e => ({ text: e })),
-            ].map((item, i) => (
-              <div key={i} className="flex items-center gap-3">
-                <div className="w-[18px] h-[18px] rounded-full bg-[#f5f5f5] flex items-center justify-center flex-shrink-0">
-                  <Check className="h-2.5 w-2.5 text-[#1a1a1a]" />
-                </div>
-                <span className={`text-[14px] ${(item as any).bold ? 'font-semibold text-[#1a1a1a]' : 'text-[#666]'}`}>
-                  {item.text}
-                </span>
-              </div>
-            ))}
-            <div className="flex items-center gap-3">
-              <div className="w-[18px] h-[18px] rounded-full bg-[#f5f5f5] flex items-center justify-center flex-shrink-0">
-                <Check className="h-2.5 w-2.5 text-[#1a1a1a]" />
-              </div>
-              <span className="text-[14px] text-[#666]">Unlimited cellular data & global coverage</span>
-            </div>
+          {/* Features — full comparison, included first then excluded */}
+          <div className="p-5 space-y-3">
+            {(() => {
+              const allFeatures = [
+                { label: 'Virtual fences', values: { bronze: '5', silver: '20', gold: 'Unlimited' } as Record<string, string>, tiers: ['bronze', 'silver', 'gold'] },
+                { label: 'Cellular data & global coverage', values: {} as Record<string, string>, tiers: ['bronze', 'silver', 'gold'] },
+                { label: 'Live video support', values: {} as Record<string, string>, tiers: ['bronze', 'silver', 'gold'] },
+                { label: 'Off upgrades & replacements', values: { bronze: '$150', silver: '$175', gold: '$200' } as Record<string, string>, tiers: ['bronze', 'silver', 'gold'] },
+                { label: '1-on-1 setup session', values: {} as Record<string, string>, tiers: ['silver', 'gold'] },
+                { label: 'Accessories discount', values: { silver: '25%', gold: '50%' } as Record<string, string>, tiers: ['silver', 'gold'] },
+                { label: 'Activity reports', values: {} as Record<string, string>, tiers: ['silver', 'gold'] },
+                { label: 'Concierge support', values: {} as Record<string, string>, tiers: ['gold'] },
+                { label: 'Advanced health tracking', values: {} as Record<string, string>, tiers: ['gold'] },
+                { label: 'Expert trainer sessions', values: {} as Record<string, string>, tiers: ['gold'] },
+              ];
+
+              const included = allFeatures.filter(f => f.tiers.includes(selectedPlan));
+              const excluded = allFeatures.filter(f => !f.tiers.includes(selectedPlan));
+
+              return (
+                <>
+                  {included.map((feature, i) => {
+                    const value = feature.values[selectedPlan];
+                    return (
+                      <div key={`in-${i}`} className="flex items-center gap-3">
+                        <div className="w-[18px] h-[18px] rounded-full bg-[#dcfce7] flex items-center justify-center flex-shrink-0">
+                          <Check className="h-2.5 w-2.5 text-[#16a34a]" />
+                        </div>
+                        <span className="text-[14px] text-[#444]">
+                          {value ? `${value} ${feature.label}` : feature.label}
+                        </span>
+                      </div>
+                    );
+                  })}
+                  {excluded.length > 0 && (
+                    <>
+                      {excluded.map((feature, i) => (
+                        <div key={`ex-${i}`} className="flex items-center gap-3">
+                          <div className="w-[18px] h-[18px] rounded-full bg-[#f5f5f5] flex items-center justify-center flex-shrink-0">
+                            <X className="h-2.5 w-2.5 text-[#ccc]" />
+                          </div>
+                          <span className="text-[14px] text-[#bbb]">
+                            {feature.label}
+                          </span>
+                        </div>
+                      ))}
+                    </>
+                  )}
+                </>
+              );
+            })()}
           </div>
+        </div>
+
+        {/* ── Halo Care ── */}
+        <div
+          className={`rounded-xl transition-all duration-200 overflow-hidden ${
+            haloCare
+              ? 'bg-white shadow-[0_1px_8px_rgba(0,0,0,0.08)] ring-1 ring-[#1a1a1a]/10'
+              : 'bg-white shadow-[0_1px_4px_rgba(0,0,0,0.04)]'
+          }`}
+        >
+          <button
+            onClick={() => setHaloCare(!haloCare)}
+            className="w-full px-5 py-4 flex items-center gap-3.5"
+          >
+            <div className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors duration-200 ${
+              haloCare ? 'bg-[#FCD62D]' : 'bg-[#f0f0f0]'
+            }`}>
+              <CollarIcon className={`${haloCare ? 'text-white' : 'text-[#999]'}`} />
+            </div>
+            <div className="flex-1 text-left min-w-0">
+              <div className="flex items-center gap-2">
+                <span className="text-[14px] font-semibold text-[#1a1a1a]">Halo Care</span>
+                {billing !== 'monthly' && (
+                  <span className="text-[10px] font-medium text-[#16a34a] bg-[#dcfce7] px-1.5 py-0.5 rounded">
+                    Save {fmt(haloCarePrices.monthly * (billing === 'annual' ? 12 : 24) - haloCarePeriod())}
+                  </span>
+                )}
+              </div>
+              <span className="text-[13px] text-[#999]">
+                +{fmt(haloCareMonthly())}/mo per collar
+              </span>
+            </div>
+            {/* Toggle */}
+            <div className={`w-11 h-[26px] rounded-full p-[3px] transition-colors duration-200 flex-shrink-0 ${
+              haloCare ? 'bg-[#1a1a1a]' : 'bg-[#ddd]'
+            }`}>
+              <div className={`w-5 h-5 rounded-full bg-white shadow-sm transition-transform duration-200 ${
+                haloCare ? 'translate-x-[18px]' : 'translate-x-0'
+              }`} />
+            </div>
+          </button>
+
+          {haloCare && (
+            <div className="px-5 pb-4 space-y-2.5">
+              <div className="h-px bg-[#f0f0f0]" />
+              {[
+                'Replace collar for $199 (retail $599)',
+                'Free upgrades to latest model',
+                'Priority support',
+              ].map((text, i) => (
+                <div key={i} className="flex items-center gap-2.5">
+                  <Check className="h-3 w-3 text-[#999] flex-shrink-0" />
+                  <span className="text-[13px] text-[#777]">{text}</span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* ── Billing Frequency ── */}
@@ -376,63 +460,6 @@ export default function AppV4() {
               );
             })}
           </div>
-        </div>
-
-        {/* ── Halo Care ── */}
-        <div
-          className={`rounded-xl transition-all duration-200 overflow-hidden ${
-            haloCare
-              ? 'bg-white shadow-[0_1px_8px_rgba(0,0,0,0.08)] ring-1 ring-[#1a1a1a]/10'
-              : 'bg-white shadow-[0_1px_4px_rgba(0,0,0,0.04)]'
-          }`}
-        >
-          <button
-            onClick={() => setHaloCare(!haloCare)}
-            className="w-full px-5 py-4 flex items-center gap-3.5"
-          >
-            <div className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors duration-200 ${
-              haloCare ? 'bg-[#FCD62D]' : 'bg-[#f0f0f0]'
-            }`}>
-              <CollarIcon className={`${haloCare ? 'text-white' : 'text-[#999]'}`} />
-            </div>
-            <div className="flex-1 text-left min-w-0">
-              <div className="flex items-center gap-2">
-                <span className="text-[14px] font-semibold text-[#1a1a1a]">Halo Care</span>
-                {billing !== 'monthly' && (
-                  <span className="text-[10px] font-medium text-[#16a34a] bg-[#dcfce7] px-1.5 py-0.5 rounded">
-                    Save {fmt(haloCarePrices.monthly * (billing === 'annual' ? 12 : 24) - haloCarePeriod())}
-                  </span>
-                )}
-              </div>
-              <span className="text-[13px] text-[#999]">
-                +{fmt(haloCareMonthly())}/mo per collar
-              </span>
-            </div>
-            {/* Toggle */}
-            <div className={`w-11 h-[26px] rounded-full p-[3px] transition-colors duration-200 flex-shrink-0 ${
-              haloCare ? 'bg-[#1a1a1a]' : 'bg-[#ddd]'
-            }`}>
-              <div className={`w-5 h-5 rounded-full bg-white shadow-sm transition-transform duration-200 ${
-                haloCare ? 'translate-x-[18px]' : 'translate-x-0'
-              }`} />
-            </div>
-          </button>
-
-          {haloCare && (
-            <div className="px-5 pb-4 space-y-2.5">
-              <div className="h-px bg-[#f0f0f0]" />
-              {[
-                'Replace collar for $199 (retail $599)',
-                'Free upgrades to latest model',
-                'Priority support',
-              ].map((text, i) => (
-                <div key={i} className="flex items-center gap-2.5">
-                  <Check className="h-3 w-3 text-[#999] flex-shrink-0" />
-                  <span className="text-[13px] text-[#777]">{text}</span>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
 
         {/* ── Collar Count ── */}
